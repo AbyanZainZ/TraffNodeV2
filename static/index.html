@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraffNode V2 — Dual-Engine Hybrid Passive Income</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+    <div class="tn-container">
+        <!-- TOP HEADER -->
+        <header class="tn-header">
+            <div class="tn-brand">
+                <span class="tn-logo-icon">⚡</span>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <h1 class="tn-title">TRAFFNODE V2</h1>
+                        <span class="tn-version-badge">HYBRID CONCURRENCY</span>
+                    </div>
+                    <p class="tn-subtitle">Dual-Engine Harvester: Surfshark WireGuard (925 Unique IPs) + Custom Proxychains</p>
+                </div>
+            </div>
+            <div class="tn-header-stats">
+                <div class="tn-chip">
+                    <span class="tn-chip-label">PORT:</span>
+                    <span class="tn-chip-value highlight-cyan">8888</span>
+                </div>
+                <div class="tn-chip">
+                    <span class="tn-chip-label">VPS IP:</span>
+                    <span class="tn-chip-value" id="val-server-ip">Detecting...</span>
+                </div>
+                <div class="tn-badge-live">
+                    <span class="tn-pulse-dot"></span>
+                    <span id="daemon-status-text">DAEMON 24/7 ACTIVE</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- TOP METRICS GRID -->
+        <section class="tn-metrics-grid" aria-label="System Metrics">
+            <div class="tn-card tn-metric-card border-green">
+                <div class="tn-metric-label">RUNNING WORKERS</div>
+                <div class="tn-metric-value text-green" id="stat-running-nodes">0</div>
+                <div class="tn-metric-desc" id="stat-total-nodes">0 Total Nodes Terdaftar</div>
+            </div>
+            <div class="tn-card tn-metric-card border-cyan">
+                <div class="tn-metric-label">DUAL-POOL BALANCE</div>
+                <div class="tn-metric-value text-cyan" id="stat-dual-balance">0 SS / 0 PX</div>
+                <div class="tn-metric-desc" id="stat-comp-detail">🦈 0 Surfshark • 🌐 0 Custom Proxy</div>
+            </div>
+            <div class="tn-card tn-metric-card border-purple">
+                <div class="tn-metric-label">TRAFFIC HARVESTED (IN / OUT)</div>
+                <div class="tn-metric-value text-purple" id="stat-bandwidth-total">0 B</div>
+                <div class="tn-metric-desc" id="stat-bandwidth-speed">0 B/s Up • 0 B/s Down</div>
+            </div>
+            <div class="tn-card tn-metric-card border-amber">
+                <div class="tn-metric-label">VPS HARDWARE VITALS</div>
+                <div class="tn-metric-value text-amber" id="stat-cpu-ram">0% CPU</div>
+                <div class="tn-metric-desc" id="stat-ram-detail">RAM: 0 MB / 0 MB</div>
+            </div>
+        </section>
+
+        <!-- MAIN CONTROL PANELS -->
+        <main class="tn-main-grid">
+            <!-- LEFT PANEL: DUAL ENGINE PROVIDER -->
+            <section class="tn-card" aria-label="Provider Configuration">
+                <div class="tn-card-header">
+                    <h2 class="tn-card-title">🔑 Node Providers & Credentials</h2>
+                    <span class="tn-tag" id="tag-parse-count">0 Node Terdaftar</span>
+                </div>
+
+                <!-- TraffMonetizer Token -->
+                <div class="tn-input-group">
+                    <label for="cfg-token">TraffMonetizer Token (Dashboard Account):</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="cfg-token" class="tn-input" placeholder="Paste Token TraffMonetizer Anda di sini...">
+                        <button type="button" class="tn-btn tn-btn-sm tn-btn-primary" id="btn-save-token">Simpan</button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tn-tabs" role="tablist">
+                    <button type="button" role="tab" aria-selected="true" class="tn-tab-btn active" id="tab-btn-surfshark" onclick="switchTab('surfshark')">
+                        🦈 Surfshark VPN Engine (925 IPs)
+                    </button>
+                    <button type="button" role="tab" aria-selected="false" class="tn-tab-btn" id="tab-btn-proxies" onclick="switchTab('proxies')">
+                        🌐 Custom Proxy List (Private/Public)
+                    </button>
+                </div>
+
+                <!-- TAB 1: SURFSHARK ENGINE -->
+                <div id="tab-content-surfshark" class="tn-tab-content active" role="tabpanel">
+                    <div class="tn-pool-info-banner">
+                        <span class="banner-badge">🦈 WIREPROXY POOL</span>
+                        <span>Tersedia <strong>925 Server Fisik WireGuard Unik</strong> tanpa duplikasi IP. Aman berjalan bersama Custom Proxy!</span>
+                    </div>
+
+                    <div class="tn-input-group" style="margin-top: 10px;">
+                        <label for="cfg-surfshark-key">Surfshark WireGuard Private Key:</label>
+                        <input type="password" id="cfg-surfshark-key" class="tn-input" placeholder="EClA6t7WZQgOmIxWHvF78QNBxA4agOZYibFQeW+iCk8=">
+                        <span class="tn-help-text">Dapatkan di: Dashboard Surfshark ➔ Manual Setup ➔ WireGuard</span>
+                    </div>
+
+                    <div class="tn-two-col-grid" style="margin-top: 10px;">
+                        <div class="tn-input-group">
+                            <label for="cfg-surfshark-region">Filter Region Server:</label>
+                            <select id="cfg-surfshark-region" class="tn-select">
+                                <option value="all">Semua Negara (925 Server Fisik Unik)</option>
+                                <option value="us">United States (215 Server Fisik US Unik)</option>
+                                <option value="premium">Negara Premium (US, UK, DE, SG, JP, AU, CA, NL)</option>
+                                <option value="asia">Asia Pasifik (SG, MY, ID, JP, KR, HK, TW, AU, TH, VN, PH, NZ)</option>
+                                <option value="europe">Eropa (DE, UK, NL, FR, IT, ES, CH, PL, SE, NO, BE)</option>
+                            </select>
+                        </div>
+                        <div class="tn-input-group">
+                            <label for="cfg-surfshark-count">Jumlah Node (1 - 500):</label>
+                            <input type="number" id="cfg-surfshark-count" class="tn-input" value="50" min="1" max="500">
+                        </div>
+                    </div>
+
+                    <div class="tn-two-col-grid" style="margin-top: 10px;">
+                        <div class="tn-input-group">
+                            <label for="cfg-surfshark-port">Port Wireproxy Awal:</label>
+                            <input type="number" id="cfg-surfshark-port" class="tn-input" value="21000" min="1024" max="60000">
+                        </div>
+                        <div class="tn-input-group">
+                            <label for="cfg-surfshark-mode">Mode Generasi:</label>
+                            <select id="cfg-surfshark-mode" class="tn-select">
+                                <option value="replace">Ganti Pool Surfshark (Aman, Proxy Tetap Utuh)</option>
+                                <option value="append">Tambah ke Pool Surfshark</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; margin-top: 14px;">
+                        <button type="button" class="tn-btn tn-btn-surfshark flex-1" id="btn-generate-surfshark">
+                            <span id="txt-btn-gen-ss">🦈 GENERATE & SIMPAN SURFSHARK</span>
+                        </button>
+                        <button type="button" class="tn-btn tn-btn-danger-outline" id="btn-clear-surfshark" title="Hapus seluruh node Surfshark dari pool">
+                            <span>🗑️ Bersihkan SS</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 2: CUSTOM PROXIES -->
+                <div id="tab-content-proxies" class="tn-tab-content" role="tabpanel">
+                    <div class="tn-pool-info-banner">
+                        <span class="banner-badge banner-badge-amber">🌐 CUSTOM PROXY POOL</span>
+                        <span>Mendukung format privat `IP:Port:User:Pass`, HTTP, dan SOCKS5 dengan auto-detect handshake.</span>
+                    </div>
+
+                    <div class="tn-input-group" style="margin-top: 10px;">
+                        <label for="proxies-textarea">Daftar Proxy (1 proxy per baris):</label>
+                        <textarea id="proxies-textarea" class="tn-textarea" placeholder="Contoh format didukung:&#10;191.96.254.138:6185:windowsproxy001:win012345&#10;31.59.20.176:6754:windowsproxy002:windows123&#10;socks5://user:pass@host:port&#10;http://host:port"></textarea>
+                    </div>
+
+                    <div class="tn-two-col-grid" style="margin-top: 8px;">
+                        <div class="tn-input-group">
+                            <label for="cfg-proxies-mode">Mode Simpan:</label>
+                            <select id="cfg-proxies-mode" class="tn-select">
+                                <option value="replace">Ganti Pool Proxy (Aman, SS Tetap Utuh)</option>
+                                <option value="append">Tambah ke Pool Proxy yang Ada</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: flex-end;">
+                            <span class="tn-help-text" id="lbl-proxy-count-hint">0 baris terdeteksi</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                        <button type="button" class="tn-btn tn-btn-primary flex-1" id="btn-save-proxies">
+                            <span id="txt-btn-save-px">💾 SIMPAN PROXY</span>
+                        </button>
+                        <button type="button" class="tn-btn tn-btn-check" id="btn-check-proxies">
+                            <span id="txt-btn-check-px">🩺 TEST KONEKSI PROXY</span>
+                        </button>
+                        <button type="button" class="tn-btn tn-btn-danger-outline" id="btn-clear-proxies" title="Hapus seluruh custom proxy">
+                            <span>🗑️ Bersihkan Proxy</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL: MASTER ORCHESTRATION & DUAL CONCURRENCY -->
+            <section class="tn-card" aria-label="Master Controls">
+                <div class="tn-card-header">
+                    <h2 class="tn-card-title">🚀 Master Controls & Dual Concurrency</h2>
+                    <span class="tn-tag tag-green">Auto-Heal 24/7 ON</span>
+                </div>
+
+                <p class="tn-control-desc">
+                    Jalankan seluruh worker sekaligus atau pilih per grup. Surfshark Wireproxy dan Custom Proxychains berjalan berdampingan tanpa konflik.
+                </p>
+
+                <!-- POOL STATUS COUNTER SUMMARY -->
+                <div class="tn-pool-counter-grid">
+                    <div class="tn-pool-counter-box pool-ss">
+                        <div class="pool-title">🦈 SURFSHARK POOL</div>
+                        <div class="pool-numbers">
+                            <span class="pool-active" id="cnt-ss-running">0</span>
+                            <span class="pool-sep">/</span>
+                            <span class="pool-total" id="cnt-ss-total">0 Siap</span>
+                        </div>
+                        <div class="pool-status" id="lbl-ss-status">Idle / Belum Jalan</div>
+                    </div>
+                    <div class="tn-pool-counter-box pool-px">
+                        <div class="pool-title">🌐 CUSTOM PROXY POOL</div>
+                        <div class="pool-numbers">
+                            <span class="pool-active" id="cnt-px-running">0</span>
+                            <span class="pool-sep">/</span>
+                            <span class="pool-total" id="cnt-px-total">0 Siap</span>
+                        </div>
+                        <div class="pool-status" id="lbl-px-status">Idle / Belum Jalan</div>
+                    </div>
+                </div>
+
+                <!-- MASTER BUTTONS -->
+                <div class="tn-master-buttons">
+                    <button type="button" class="tn-btn tn-btn-start-all" id="btn-start-all">
+                        <span id="txt-btn-start-all">🚀 START ALL WORKERS</span> (<span id="lbl-btn-total-all">0</span>)
+                    </button>
+                    <button type="button" class="tn-btn tn-btn-stop-all" id="btn-stop-all">
+                        <span id="txt-btn-stop-all">🛑 STOP ALL</span>
+                    </button>
+                </div>
+
+                <!-- SELECTIVE GROUP BUTTONS -->
+                <div class="tn-selective-buttons">
+                    <button type="button" class="tn-btn tn-btn-selective-ss" id="btn-start-ss">
+                        <span id="txt-btn-start-ss">▶ Start Surfshark</span> (<span id="lbl-btn-ss-count">0</span>)
+                    </button>
+                    <button type="button" class="tn-btn tn-btn-selective-px" id="btn-start-px">
+                        <span id="txt-btn-start-px">▶ Start Proxy</span> (<span id="lbl-btn-px-count">0</span>)
+                    </button>
+                    <button type="button" class="tn-btn tn-btn-secondary" id="btn-restart-all">
+                        <span id="txt-btn-restart-all">🔄 Restart All</span>
+                    </button>
+                    <button type="button" class="tn-btn tn-btn-secondary" id="btn-stop-ss">
+                        <span id="txt-btn-stop-ss">🛑 Stop SS</span>
+                    </button>
+                    <button type="button" class="tn-btn tn-btn-secondary" id="btn-stop-px">
+                        <span id="txt-btn-stop-px">🛑 Stop PX</span>
+                    </button>
+                </div>
+
+                <!-- VPS RESOURCE LOAD -->
+                <div class="tn-resource-box" style="margin-top: 14px;">
+                    <div class="tn-resource-row">
+                        <span class="res-label">CPU Load:</span>
+                        <div class="tn-progress-bar"><div class="tn-progress-fill fill-amber" id="bar-cpu" style="width: 0%;"></div></div>
+                        <span id="txt-cpu" class="res-val">0%</span>
+                    </div>
+                    <div class="tn-resource-row" style="margin-top: 8px;">
+                        <span class="res-label">RAM Usage:</span>
+                        <div class="tn-progress-bar"><div class="tn-progress-fill fill-cyan" id="bar-ram" style="width: 0%;"></div></div>
+                        <span id="txt-ram" class="res-val">0%</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- TABLE SECTION: LIVE WORKER NODES MONITOR -->
+        <section class="tn-card" style="margin-top: 16px;" aria-label="Worker Nodes Table">
+            <div class="tn-card-header" style="flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <h2 class="tn-card-title">📊 Live Worker Nodes Monitor</h2>
+                    <span class="tn-sync-text" id="lbl-table-sync">Sinkronisasi otomatis tiap 4 detik</span>
+                </div>
+
+                <!-- FILTER PILLS & SEARCH -->
+                <div class="tn-filter-bar">
+                    <div class="tn-filter-pills" role="toolbar" aria-label="Filter workers">
+                        <button type="button" class="tn-pill-btn active" data-filter="all" id="pill-all">Semua (<span id="cnt-pill-all">0</span>)</button>
+                        <button type="button" class="tn-pill-btn" data-filter="surfshark" id="pill-ss">🦈 Surfshark (<span id="cnt-pill-ss">0</span>)</button>
+                        <button type="button" class="tn-pill-btn" data-filter="proxy" id="pill-px">🌐 Custom Proxy (<span id="cnt-pill-px">0</span>)</button>
+                        <button type="button" class="tn-pill-btn" data-filter="running" id="pill-running">▶ Running (<span id="cnt-pill-running">0</span>)</button>
+                        <button type="button" class="tn-pill-btn" data-filter="error" id="pill-error">⚠️ Offline/Error (<span id="cnt-pill-error">0</span>)</button>
+                    </div>
+                    <input type="text" id="table-filter" class="tn-filter-input" placeholder="🔍 Cari ID, IP, Negara, Port, Status...">
+                </div>
+            </div>
+
+            <div class="tn-table-wrapper">
+                <table class="tn-table" aria-label="Daftar Worker TraffNode">
+                    <thead>
+                        <tr>
+                            <th scope="col">NODE ID</th>
+                            <th scope="col">POOL / TIPE</th>
+                            <th scope="col">STATUS</th>
+                            <th scope="col">DEVICE NAME</th>
+                            <th scope="col">ENDPOINT / UPSTREAM</th>
+                            <th scope="col">PORT / PROTOCOL</th>
+                            <th scope="col">HEALTH / LATENCY</th>
+                            <th scope="col">DATA TRAFFIC</th>
+                            <th scope="col">UPTIME</th>
+                            <th scope="col" style="text-align: right;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="nodes-tbody">
+                        <tr>
+                            <td colspan="10" class="tn-text-center tn-muted" style="padding: 24px;">
+                                Belum ada worker terdaftar. Generate Surfshark atau masukkan Custom Proxy di atas lalu klik "START ALL WORKERS".
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="tn-footer">
+            <span>⚡ TraffNode V2.0 • Hybrid Multi-Proxy & Surfshark Passive Income Harvester</span>
+            <span id="health-status-text">TraffNode Daemon Siap</span>
+        </footer>
+    </div>
+
+    <!-- LOG MODAL -->
+    <div id="log-modal" class="tn-modal" role="dialog" aria-modal="true" aria-labelledby="log-modal-title">
+        <div class="tn-modal-content">
+            <div class="tn-modal-header">
+                <h3 id="log-modal-title" style="font-weight: 700; color: #38bdf8; font-size: 14px;">Node Worker Log</h3>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" class="tn-btn-action" id="btn-refresh-log">🔄 Refresh</button>
+                    <button type="button" class="tn-modal-close" id="btn-close-modal" aria-label="Tutup log">&times;</button>
+                </div>
+            </div>
+            <pre id="log-modal-body" class="tn-modal-body"></pre>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="tn-toast" class="tn-toast" role="status" aria-live="polite"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
