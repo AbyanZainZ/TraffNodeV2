@@ -408,15 +408,24 @@ function renderTable(nodesList) {
     nodesTbody.innerHTML = html;
 }
 
-// FILTER PILLS EVENT LISTENERS
+// FILTER PILLS EVENT LISTENERS & FUNCTION
+window.setTableFilter = function(filterName, btnEl) {
+    document.querySelectorAll('.tn-pill, .tn-pill-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) {
+        btnEl.classList.add('active');
+    } else {
+        const target = document.querySelector(`[data-filter="${filterName}"]`);
+        if (target) target.classList.add('active');
+    }
+    activeFilter = filterName || 'all';
+    if (currentStatusData && currentStatusData.nodes) {
+        renderTable(currentStatusData.nodes);
+    }
+};
+
 document.querySelectorAll('.tn-pill, .tn-pill-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.tn-pill, .tn-pill-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        activeFilter = btn.dataset.filter || 'all';
-        if (currentStatusData && currentStatusData.nodes) {
-            renderTable(currentStatusData.nodes);
-        }
+    btn.addEventListener('click', (e) => {
+        window.setTableFilter(btn.dataset.filter || 'all', btn);
     });
 });
 

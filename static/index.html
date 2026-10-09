@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>TraffNode V2 — VPS Multi-Proxy & Surfshark Passive Income Harvester</title>
-    <link rel="stylesheet" href="/static/style.css?v=2.1">
+    <link rel="stylesheet" href="/static/style.css?v=2.3">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
 </head>
 <body>
@@ -261,11 +264,11 @@
                 <!-- FILTER PILLS, SEARCH & ACTIONS -->
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                     <div class="tn-pills-bar" role="toolbar" aria-label="Filter status">
-                        <button type="button" class="tn-pill tn-pill-btn active" data-filter="all" id="pill-all">Semua (<span id="cnt-pill-all">0</span>)</button>
-                        <button type="button" class="tn-pill tn-pill-btn" data-filter="surfshark" id="pill-ss">🦈 Surfshark (<span id="cnt-pill-ss">0</span>)</button>
-                        <button type="button" class="tn-pill tn-pill-btn" data-filter="proxy" id="pill-px">🌐 Proxy (<span id="cnt-pill-px">0</span>)</button>
-                        <button type="button" class="tn-pill tn-pill-btn" data-filter="running" id="pill-running">▶ Running (<span id="cnt-pill-running">0</span>)</button>
-                        <button type="button" class="tn-pill tn-pill-btn" data-filter="error" id="pill-error">⚠️ Error (<span id="cnt-pill-error">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn active" onclick="setTableFilter('all', this)" data-filter="all" id="pill-all">Semua (<span id="cnt-pill-all">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn" onclick="setTableFilter('surfshark', this)" data-filter="surfshark" id="pill-ss">🦈 Surfshark (<span id="cnt-pill-ss">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn" onclick="setTableFilter('proxy', this)" data-filter="proxy" id="pill-px">🌐 Proxy (<span id="cnt-pill-px">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn" onclick="setTableFilter('running', this)" data-filter="running" id="pill-running">▶ Running (<span id="cnt-pill-running">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn" onclick="setTableFilter('error', this)" data-filter="error" id="pill-error">⚠️ Error (<span id="cnt-pill-error">0</span>)</button>
                     </div>
                     <input type="text" id="table-filter" class="tn-filter-input" placeholder="🔍 Cari ID / Negara / IP / Status...">
                     
@@ -329,7 +332,7 @@
     <!-- TOAST NOTIFICATION -->
     <div id="tn-toast" class="tn-toast"></div>
 
-    <script src="/static/app.js?v=2.1"></script>
+    <script src="/static/app.js?v=2.3"></script>
     <script>
         function toggleKeyVisibility() {
             const input = document.getElementById('cfg-surfshark-key');
