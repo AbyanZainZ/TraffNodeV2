@@ -78,9 +78,19 @@ venv/bin/pip install --upgrade pip
 venv/bin/pip install -r requirements.txt
 
 echo -e "${GREEN}[5/6] Tuning Kernel Limits & Konfigurasi Firewall Port 8888...${NC}"
-# Tuning file descriptors untuk mendukung ratusan node
-ulimit -n 65535 2>/dev/null || true
+# Tuning file descriptors, processes & threads untuk ratusan/ribuan node (mencegah Errno 11 / OS can't spawn worker thread)
+ulimit -n 1048576 2>/dev/null || true
+ulimit -u 655350 2>/dev/null || true
 sysctl -w fs.file-max=2097152 2>/dev/null || true
+sysctl -w kernel.pid_max=4194304 2>/dev/null || true
+sysctl -w kernel.threads-max=4194304 2>/dev/null || true
+sysctl -w vm.max_map_count=2621440 2>/dev/null || true
+
+# Systemd TasksMax global config agar tidak dibatasi 4915 tasks
+if [ -f /etc/systemd/system.conf ]; then
+    grep -q "DefaultTasksMax" /etc/systemd/system.conf && sed -i 's/^#*DefaultTasksMax=.*/DefaultTasksMax=infinity/' /etc/systemd/system.conf || echo "DefaultTasksMax=infinity" >> /etc/systemd/system.conf
+fi
+systemctl daemon-reexec 2>/dev/null || true
 
 # Otomatis buat Swap jika swap kosong (sangat penting untuk VPS Tencent 1-2GB RAM)
 TOTAL_SWAP=$(free -m | awk '/Swap:/ {print $2}')
@@ -117,7 +127,9 @@ WorkingDirectory=/opt/traffnode
 ExecStart=/opt/traffnode/venv/bin/python3 /opt/traffnode/app.py
 Restart=always
 RestartSec=5
-LimitNOFILE=65535
+LimitNOFILE=1048576
+LimitNPROC=infinity
+TasksMax=infinity
 
 [Install]
 WantedBy=multi-user.target

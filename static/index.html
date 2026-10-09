@@ -258,16 +258,26 @@
                     <span style="font-size: 11px; color: var(--text-muted);" id="lbl-table-sync">Sinkronisasi tiap 4 detik</span>
                 </div>
 
-                <!-- FILTER PILLS & SEARCH -->
+                <!-- FILTER PILLS, SEARCH & ACTIONS -->
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                     <div class="tn-pills-bar" role="toolbar" aria-label="Filter status">
-                        <button type="button" class="tn-pill active" data-filter="all" id="pill-all">Semua (<span id="cnt-pill-all">0</span>)</button>
-                        <button type="button" class="tn-pill" data-filter="surfshark" id="pill-ss">🦈 Surfshark (<span id="cnt-pill-ss">0</span>)</button>
-                        <button type="button" class="tn-pill" data-filter="proxy" id="pill-px">🌐 Proxy (<span id="cnt-pill-px">0</span>)</button>
-                        <button type="button" class="tn-pill" data-filter="running" id="pill-running">▶ Running (<span id="cnt-pill-running">0</span>)</button>
-                        <button type="button" class="tn-pill" data-filter="error" id="pill-error">⚠️ Error (<span id="cnt-pill-error">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn active" data-filter="all" id="pill-all">Semua (<span id="cnt-pill-all">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn" data-filter="surfshark" id="pill-ss">🦈 Surfshark (<span id="cnt-pill-ss">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn" data-filter="proxy" id="pill-px">🌐 Proxy (<span id="cnt-pill-px">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn" data-filter="running" id="pill-running">▶ Running (<span id="cnt-pill-running">0</span>)</button>
+                        <button type="button" class="tn-pill tn-pill-btn" data-filter="error" id="pill-error">⚠️ Error (<span id="cnt-pill-error">0</span>)</button>
                     </div>
                     <input type="text" id="table-filter" class="tn-filter-input" placeholder="🔍 Cari ID / Negara / IP / Status...">
+                    
+                    <button type="button" class="tn-btn-action" id="btn-purge-error" style="background: rgba(255, 23, 68, 0.2); border: 1px solid #ff1744; color: #ff5252; padding: 5px 12px; font-weight: 600; font-size: 11.5px; border-radius: 6px; cursor: pointer;" title="Buang semua node yang berstatus error atau offline">
+                        🧹 Bersihkan Error (<span id="cnt-purge-error">0</span>)
+                    </button>
+                    <button type="button" class="tn-btn-action" id="btn-export-proxies" style="background: rgba(0, 229, 255, 0.15); border: 1px solid #00e5ff; color: #00e5ff; padding: 5px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; cursor: pointer;" title="Download daftar proxy live format host:port:user:pass">
+                        📥 Export Proxy
+                    </button>
+                    <button type="button" class="tn-btn-action" id="btn-export-config" style="background: rgba(0, 230, 118, 0.15); border: 1px solid #00e676; color: #00e676; padding: 5px 10px; font-weight: 600; font-size: 11.5px; border-radius: 6px; cursor: pointer;" title="Download backup konfigurasi JSON semua node">
+                        📥 Export Config
+                    </button>
                 </div>
             </div>
 

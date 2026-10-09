@@ -573,19 +573,19 @@ async def start_proxies_only():
 @app.post("/api/stop-all")
 async def stop_all_nodes():
     all_nodes = get_combined_nodes()
-    stopped = await asyncio.to_thread(supervisor.stop_all, all_nodes)
+    stopped = supervisor.stop_all(all_nodes)
     save_nodes_file(all_nodes)
     return {"success": True, "stopped": stopped, "message": "Seluruh worker node (Surfshark + Proxy) telah dihentikan."}
 
 @app.post("/api/stop-surfshark")
 async def stop_surfshark_only():
-    stopped = await asyncio.to_thread(supervisor.stop_filtered, surfshark_nodes, "surfshark")
+    stopped = supervisor.stop_filtered(surfshark_nodes, "surfshark")
     save_nodes_file(get_combined_nodes())
     return {"success": True, "stopped": stopped, "message": f"🦈 {stopped} worker Surfshark telah dihentikan."}
 
 @app.post("/api/stop-proxies")
 async def stop_proxies_only():
-    stopped = await asyncio.to_thread(supervisor.stop_filtered, custom_proxy_nodes, "proxy")
+    stopped = supervisor.stop_filtered(custom_proxy_nodes, "proxy")
     save_nodes_file(get_combined_nodes())
     return {"success": True, "stopped": stopped, "message": f"🌐 {stopped} worker Custom Proxy telah dihentikan."}
 
@@ -659,12 +659,78 @@ async def restart_single_node(node_id: int):
     save_nodes_file(get_combined_nodes())
     return {"success": True, "node": node.to_dict()}
 
-@app.get("/api/node/{node_id}/logs", response_class=PlainTextResponse)
-async def get_node_logs(node_id: int):
+@app.delete("/api/nodes/error")
+async def clear_error_nodes():
+    global surfshark_nodes, custom_proxy_nodes
+    all_nodes = get_combined_nodes()
+    dead_or_error_nodes = [n for n in all_nodes if n.status == "ERROR" or n.is_alive is False]
+    for n in dead_or_error_nodes:
+        supervisor.stop_node(n)
+    
+    dead_ids = set(n.id for n in dead_or_error_nodes)
+    surfshark_nodes = [n for n in surfshark_nodes if n.id not in dead_ids]
+    custom_proxy_nodes = [n for n in custom_proxy_nodes if n.id not in dead_ids]
+    
+    remaining_proxy_raw = "\n".join(n.raw for n in custom_proxy_nodes if n.raw)
+    save_proxies_file(remaining_proxy_raw)
+    save_nodes_file(get_combined_nodes())
+    
+    return {
+        "success": True,
+        "cleared": len(dead_ids),
+        "message": f"🧹 Berhasil membuang {len(dead_ids)} node yang error/offline!"
+    }
+
+@app.delete("/api/node/{node_id}")
+async def delete_single_node(node_id: int):
+    global surfshark_nodes, custom_proxy_nodes
     node = find_node_by_id(node_id)
     if not node:
-        return "Node tidak ditemukan."
-    return supervisor.get_node_logs(node)
+        raise HTTPException(status_code=404, detail="Node tidak ditemukan")
+    supervisor.stop_node(node)
+    surfshark_nodes = [n for n in surfshark_nodes if n.id != node_id]
+    custom_proxy_nodes = [n for n in custom_proxy_nodes if n.id != node_id]
+    
+    remaining_proxy_raw = "\n".join(n.raw for n in custom_proxy_nodes if n.raw)
+    save_proxies_file(remaining_proxy_raw)
+    save_nodes_file(get_combined_nodes())
+    return {"success": True, "message": f"🗑️ Node #{node_id} berhasil dihapus."}
+
+@app.get("/api/export/live-proxies")
+async def export_live_proxies(alive_only: bool = True):
+    all_proxies = custom_proxy_nodes
+    if alive_only:
+        targets = [n for n in all_proxies if n.is_alive is not False and n.status != "ERROR"]
+    else:
+        targets = all_proxies
+    
+    lines = []
+    for n in targets:
+        if n.user and n.password:
+            lines.append(f"{n.host}:{n.port}:{n.user}:{n.password}")
+        elif n.host and n.port:
+            lines.append(f"{n.host}:{n.port}")
+        elif n.raw:
+            lines.append(n.raw)
+    
+    content = "\n".join(lines)
+    return PlainTextResponse(
+        content,
+        headers={"Content-Disposition": f"attachment; filename=live_proxies_{int(time.time())}.txt"}
+    )
+
+@app.get("/api/export/live-config")
+async def export_live_config():
+    all_nodes = get_combined_nodes()
+    data = [n.to_dict(include_password=True) for n in all_nodes]
+    content = json.dumps(data, indent=2)
+    return PlainTextResponse(
+        content,
+        headers={
+            "Content-Type": "application/json",
+            "Content-Disposition": f"attachment; filename=live_nodes_config_{int(time.time())}.json"
+        }
+    )
 
 
 if __name__ == "__main__":

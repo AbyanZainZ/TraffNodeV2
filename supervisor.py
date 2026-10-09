@@ -91,6 +91,12 @@ class NodeSupervisor:
         env["DOTNET_gcServer"] = "0"
         env["COMPlus_gcServer"] = "0"
         env["DOTNET_GCHeapHardLimit"] = "35000000"
+        # .NET ThreadPool Optimization (Mencegah exhaustion thread kernel Linux / Errno 11)
+        env["COMPlus_ThreadPool_ForceMinWorkerThreads"] = "1"
+        env["COMPlus_ThreadPool_ForceMaxWorkerThreads"] = "4"
+        env["DOTNET_ThreadPool_UnfairSemaphoreSpinLimit"] = "0"
+        env["DOTNET_SYSTEM_NET_SOCKETS_THREADPOOL_SIZE"] = "1"
+        env["COMPlus_DefaultStackSize"] = "262144"
 
         tm_bin = self._get_tm_binary()
 
@@ -373,7 +379,8 @@ class NodeSupervisor:
         # Emergency cleanup on Linux
         if os.name != "nt":
             try:
-                subprocess.run(["pkill", "-f", "wireproxy"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(["pkill", "-9", "-f", "wireproxy"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(["pkill", "-9", "-f", "cli start accept"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             except Exception:
                 pass
         return stopped

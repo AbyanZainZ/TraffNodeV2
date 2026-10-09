@@ -288,6 +288,8 @@ function renderDashboard(data) {
     if (cntPillPx) cntPillPx.textContent = pxNodes;
     if (cntPillRunning) cntPillRunning.textContent = running;
     if (cntPillError) cntPillError.textContent = deadCount;
+    const cntPurgeError = document.getElementById('cnt-purge-error');
+    if (cntPurgeError) cntPurgeError.textContent = deadCount;
 
     // Render Table
     renderTable(allNodesList);
@@ -382,6 +384,7 @@ function renderTable(nodesList) {
         const startBtn = isRunning
             ? `<button type="button" class="tn-btn-action" onclick="stopNode(${node.id})">Stop</button>`
             : `<button type="button" class="tn-btn-action" onclick="startNode(${node.id})">Start</button>`;
+        const delBtn = `<button type="button" class="tn-btn-action" onclick="deleteNode(${node.id})" title="Hapus node #${node.id}" style="color: #ff5252; margin-left: 4px;">🗑️</button>`;
 
         html += `
             <tr>
@@ -397,6 +400,7 @@ function renderTable(nodesList) {
                 <td style="text-align: right; white-space: nowrap;">
                     ${startBtn}
                     <button type="button" class="tn-btn-action" onclick="viewNodeLog(${node.id})">Log</button>
+                    ${delBtn}
                 </td>
             </tr>
         `;
@@ -405,9 +409,9 @@ function renderTable(nodesList) {
 }
 
 // FILTER PILLS EVENT LISTENERS
-document.querySelectorAll('.tn-pill-btn').forEach(btn => {
+document.querySelectorAll('.tn-pill, .tn-pill-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.tn-pill-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tn-pill, .tn-pill-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         activeFilter = btn.dataset.filter || 'all';
         if (currentStatusData && currentStatusData.nodes) {
@@ -781,6 +785,62 @@ window.stopNode = async function(nodeId) {
         }
     } catch (e) {
         showToast("Koneksi gagal saat stop node", true);
+    }
+};
+
+// PURGE ERROR NODES
+const btnPurgeError = document.getElementById('btn-purge-error');
+if (btnPurgeError) {
+    btnPurgeError.addEventListener('click', async () => {
+        if (!confirm("Hapus semua node yang berstatus ERROR atau offline?")) return;
+        btnPurgeError.disabled = true;
+        try {
+            const res = await fetch('/api/nodes/error', { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                showToast(data.message);
+                fetchStatus();
+            } else {
+                showToast(data.message || "Gagal membersihkan error", true);
+            }
+        } catch (e) {
+            showToast("Gagal menghubungi server", true);
+        } finally {
+            btnPurgeError.disabled = false;
+        }
+    });
+}
+
+// EXPORT LIVE PROXIES
+const btnExportProxies = document.getElementById('btn-export-proxies');
+if (btnExportProxies) {
+    btnExportProxies.addEventListener('click', () => {
+        window.open('/api/export/live-proxies', '_blank');
+    });
+}
+
+// EXPORT LIVE CONFIG
+const btnExportConfig = document.getElementById('btn-export-config');
+if (btnExportConfig) {
+    btnExportConfig.addEventListener('click', () => {
+        window.open('/api/export/live-config', '_blank');
+    });
+}
+
+// DELETE SINGLE NODE
+window.deleteNode = async function(nodeId) {
+    if (!confirm(`Hapus node #${nodeId}?`)) return;
+    try {
+        const res = await fetch(`/api/node/${nodeId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            showToast(data.message);
+            fetchStatus();
+        } else {
+            showToast(data.message || "Gagal menghapus node", true);
+        }
+    } catch (e) {
+        showToast("Gagal menghubungi server", true);
     }
 };
 
